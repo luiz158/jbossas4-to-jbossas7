@@ -1,0 +1,9 @@
+#0 modifier module org.jboss.log4j.logmanager => ajout deps javax.mail.api
+module add --name=org.jboss.log4j.logmanager --dependencies=javax.mail.api
+	
+#0 deploy Datasource
+	
+#1 ajouter module 
+module add --name=com.mgreau.jboss.as4toas7.helloworld --resources=jobs-helloworld.xml --dependencies=j
+
+#2 deploy application

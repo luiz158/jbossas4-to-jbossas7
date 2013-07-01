@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<appender name="FILE_HW" class="org.apache.log4j.DailyRollingFileAppender">
+		<errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler" />
+		<param name="Append" value="true" />
+		<param name="File" value="${jboss.server.log.dir}/helloworld.log" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{dd.MM.yyyy HH:mm:ss.SSS} %-5p [%c] - %m%n" />
+		</layout>
+	</appender>
+
+	<appender name="mailAppender" class="org.apache.log4j.net.SMTPAppender">
+		<param name="Threshold" value="INFO" />
+		<param name="BufferSize" value="512" />
+		<param name="SMTPHost" value="localhost" />
+		<param name="From" value="maxime.greau@dgfip.finances.gouv.fr" />
+		<param name="To" value="maxime.greau@dgfip.finances.gouv.fr" />
+		<param name="Subject" value="EAP 6 log4j mail : ca marche ???" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d{ISO8601}]%n%n%-5p%n%n%c%n%n%m%n%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="LevelMin" value="error" />
+			<param name="LevelMax" value="fatal" />
+		</filter>
+	</appender>
+
+	<appender name="EMAIL_ASYNC" class="org.apache.log4j.AsyncAppender">
+		<param name="BufferSize" value="512" />
+		<appender-ref ref="mailAppender" />
+	</appender>
+
+
+	<root>
+		<priority value="INFO" />
+		<appender-ref ref="FILE_HW" />
+		<appender-ref ref="EMAIL_ASYNC" />
+	</root>
+
+</log4j:configuration>
+
