@@ -3,7 +3,7 @@
 
 	<deployment>
 		<dependencies>
-			<module name="fr.gouv.finances.sre.helloworld" export="true" />
+			<module name="com.mgreau.jboss.as7.helloworld" export="true" />
 		</dependencies>
 	</deployment>
 

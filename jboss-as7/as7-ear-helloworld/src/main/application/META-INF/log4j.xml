@@ -18,7 +18,7 @@
 		<param name="SMTPHost" value="localhost" />
 		<param name="From" value="maxime.greau@dgfip.finances.gouv.fr" />
 		<param name="To" value="maxime.greau@dgfip.finances.gouv.fr" />
-		<param name="Subject" value="EAP 6 log4j mail : ca marche ???" />
+		<param name="Subject" value="EAP 6 log4j mail OK" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="[%d{ISO8601}]%n%n%-5p%n%n%c%n%n%m%n%n" />
 		</layout>

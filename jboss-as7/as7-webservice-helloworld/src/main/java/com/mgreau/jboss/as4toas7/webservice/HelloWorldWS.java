@@ -4,6 +4,7 @@ import javax.ejb.Stateless;
 import javax.jws.WebService;
 
 import org.apache.log4j.Logger;
+import org.jboss.ws.api.annotation.WebContext;
 
 
 @Stateless
