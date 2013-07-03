@@ -6,14 +6,20 @@
 	
 #1 ajouter module 
 #--resources=jobs-helloworld.xml;quartz-helloworld.properties
-try
-	module add --name=com.mgreau.jboss.as7.helloworld --module-xml=module.xml 
-catch
-	module remove --name=com.mgreau.jboss.as7.helloworld 
+#try
 	#module add --name=com.mgreau.jboss.as7.helloworld --module-xml=module.xml 
-end-try
+#catch
+	#module remove --name=com.mgreau.jboss.as7.helloworld 
+	#module add --name=com.mgreau.jboss.as7.helloworld --module-xml=module.xml 
+#end-try
 
 
 #2 deploy application
-deploy --force as7-ear-helloworld.ear
+#deploy --force as7-ear-helloworld.ear
+
+if (outcome == "success") of /core-service=module-loading/:list-resource-loader-paths(module=com.mgreau.jboss.as7.helloworld)
+   module remove --name=com.mgreau.jboss.as7.helloworld
+else
+   /deployment=jboss-as-helloworld-ws.war/:whoami
+end-if
 

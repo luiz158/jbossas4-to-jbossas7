@@ -1,0 +1,2 @@
+module add
+deploy as7-ear-helloworld.ear
