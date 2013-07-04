@@ -9,13 +9,13 @@
 	</parent>
 
 	<artifactId>as7-tache-helloworld</artifactId>
-	<packaging>ejb</packaging>
+	<packaging>jar</packaging>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.quartz-scheduler</groupId>
-			<artifactId>quartz</artifactId>
-			<version>1.8.6</version>
+			<groupId>com.mgreau.jboss.as7</groupId>
+			<artifactId>as7-starter-helloworld</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 </project>

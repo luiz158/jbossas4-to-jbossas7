@@ -11,9 +11,9 @@
 	
 	<dependencies>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>as7-tache-helloworld</artifactId>
-			<version>${project.version}</version>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+			<version>1.8.6</version>
 		</dependency>
 	</dependencies>
 
