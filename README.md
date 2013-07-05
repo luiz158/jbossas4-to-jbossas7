@@ -11,11 +11,11 @@ APP IN JBOSS AS 7.2
 
 > $JBOSS_HOME/bin/standalone.sh
 
-+ Add com.mgreau.jboss.as7.helloworld module ($PROJECT_HOME => file path where the project was checkout)
++ Add com.mgreau.jboss.as7.helloworld module (${module.dir} = $PROJECT_HOME/jbossas4-to-jbossas7/jboss-as7/as7-ear-helloworld/src/main/modules/helloworld/)
 
 > $JBOSS_HOME/bin/jboss-cli.sh --connect
 
-> module add --name=com.mgreau.jboss.as7.helloworld --module-xml=$PROJECT_HOME/jbossas4-to-jbossas7/jboss-as7/as7-ear-helloworld/src/main/modules/helloworld/module.xml
+> module add --name=com.mgreau.jboss.as7.helloworld --module-xml=${module.dir}/module.xml --resources=${module.dir}/application-helloworld.properties:${module.dir}/jobs-helloworld.xml:${module.dir}/quartz-helloworld.properties
 
 + Build and deploy the HelloWorld EAR App
 
