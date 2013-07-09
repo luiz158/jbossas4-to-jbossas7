@@ -1,2 +1,0 @@
-#add module
-module add --name=com.mgreau.jboss.as7.helloworld --module-xml=${module.dir}module.xml --resources=${module.dir}application-helloworld.properties,${module.dir}jobs-helloworld.xml,${module.dir}quartz-helloworld.properties

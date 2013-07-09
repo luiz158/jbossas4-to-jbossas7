@@ -63,6 +63,7 @@ public class CliLauncher {
         int exitCode = 0;
         CommandContext cmdCtx = null;
         boolean gui = false;
+        String appName = "";
         try {
             String argError = null;
             List<String> commands = null;
@@ -146,8 +147,9 @@ public class CliLauncher {
                     version = true;
                 } else if ("--gui".equals(arg)) {
                     gui = true;
-                } else if ("--appDeployment".equals(arg)) {
+                } else if (arg.startsWith("--appDeployment=")  || arg.startsWith("appDeployment=")) {
                     isAppDeployment = true;
+                    appName = arg.startsWith("--") ? arg.substring(16) : arg.substring(14);
                 } else if(arg.startsWith("--file=") || arg.startsWith("file=")) {
                     if(file != null) {
                         argError = "Duplicate argument '--file'.";
@@ -273,7 +275,7 @@ public class CliLauncher {
 
             if(file != null) {
                 cmdCtx = initCommandContext(defaultControllerProtocol, defaultControllerHost, defaultControllerPort, username, password, false, connect, connectionTimeout);
-                processFile(file, cmdCtx, isAppDeployment, props);
+                processFile(file, cmdCtx, isAppDeployment, appName, props);
                 return;
             }
 
@@ -325,15 +327,15 @@ public class CliLauncher {
         }
     }
 
-    private static void processFile(File file, final CommandContext cmdCtx, final boolean isAppDeployment, final Properties props) {
+    private static void processFile(File file, final CommandContext cmdCtx, final boolean isAppDeployment, final String appName, final Properties props) {
 
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new FileReader(file));
             String line = reader.readLine();
             while (cmdCtx.getExitCode() == 0 && !cmdCtx.isTerminated() && line != null) {
-            	if (isAppDeployment && (line.startsWith("module add") || line.startsWith("deploy")))
-            		processAppDeployment(cmdCtx, props, line);
+            	if (isAppDeployment)
+            		processAppDeployment(cmdCtx, appName, props, line);
             	else
             		cmdCtx.handleSafe(line.trim());
                 line = reader.readLine();
@@ -346,101 +348,48 @@ public class CliLauncher {
         }
     }
     
-    private static void processAppDeployment(final CommandContext cmdCtx, final Properties props, String line) throws IOException, CommandLineException {
+    private static void processAppDeployment(final CommandContext cmdCtx, final String appName, final Properties props, String line) throws IOException, CommandLineException {
     	
+    	String command = null;
     	 //check if module already exist then add it
 		if (line.startsWith("module add")) {
-			String moduleName = "com.mgreau.jboss.as7.helloworld";//line.split("--name=")[1];
 			ModelNode moduleInfo = cmdCtx
 					.buildRequest("/core-service=module-loading/:list-resource-loader-paths(module="
-							+ moduleName + ")");
+							+ props.getProperty("module.name") + ")");
 			String result = cmdCtx.getModelControllerClient()
 					.execute(moduleInfo).get("outcome").asString();
-			String command = null;
+			
 			if ("success".equals(result)) {
 				// suppression du module existant
-				command = "module remove --name=" + moduleName;
-				cmdCtx.handle(command);
+				try {
+					command = "module remove --name="
+							+ props.getProperty("module.name");
+					cmdCtx.handle(command);
+				} catch (CommandLineException cmdEx) {
+					if (!cmdEx.getMessage().contains("Failed to locate module")) {
+						throw cmdEx;
+					}
+					// module remove OK
+				}
 			}
 
 			// Command ajout du module
-			command = "module add --name=" + moduleName
-					+ "--module-xml="+ props.getProperty("module.dir") + System.getProperty("file.separator")+"module.xml --resources=" + props.getProperty("module.dir") + System.getProperty("file.separator")+"quartz-helloworld.properties ";
+			command = "module add --name=" + props.getProperty("module.name")
+					+ " --module-xml="+ props.getProperty("module.dir") + System.getProperty("file.separator")+"module.xml --resources=" + props.getProperty("module.dir") + System.getProperty("file.separator")+"quartz-helloworld.properties ";
+			//cmdCtx.handle(command);
+		} 
+		//check is app is already deployed, then deploy it
+		else if(line.startsWith("deploy")) {
+			command = line;
 			cmdCtx.handle(command);
+			
 		}
+		//nothing special for this command
+		else{
+			cmdCtx.handleSafe(line.trim());
+		}
+		
 	}
     
-    /** Untar an input file into an output file.
-
-     * The output file is created in the output folder, having the same name
-     * as the input file, minus the '.tar' extension. 
-     * 
-     * @param inputFile     the input .tar file
-     * @param outputDir     the output directory file. 
-     * @throws IOException 
-     * @throws FileNotFoundException
-     *  
-     * @return  The {@link List} of {@link File}s with the untared content.
-     * @throws ArchiveException 
-     */
-    private static List<File> unTar(final File inputFile, final File outputDir) throws FileNotFoundException, IOException, ArchiveException {
-
-        //LOG.info(String.format("Untaring %s to dir %s.", inputFile.getAbsolutePath(), outputDir.getAbsolutePath()));
-
-        final List<File> untaredFiles = new LinkedList<File>();
-        final InputStream is = new FileInputStream(inputFile); 
-        final TarArchiveInputStream debInputStream = (TarArchiveInputStream) new ArchiveStreamFactory().createArchiveInputStream("tar", is);
-        TarArchiveEntry entry = null; 
-        while ((entry = (TarArchiveEntry)debInputStream.getNextEntry()) != null) {
-            final File outputFile = new File(outputDir, entry.getName());
-            if (entry.isDirectory()) {
-                //LOG.info(String.format("Attempting to write output directory %s.", outputFile.getAbsolutePath()));
-                if (!outputFile.exists()) {
-                    //LOG.info(String.format("Attempting to create output directory %s.", outputFile.getAbsolutePath()));
-                    if (!outputFile.mkdirs()) {
-                        throw new IllegalStateException(String.format("Couldn't create directory %s.", outputFile.getAbsolutePath()));
-                    }
-                }
-            } else {
-                //LOG.info(String.format("Creating output file %s.", outputFile.getAbsolutePath()));
-                final OutputStream outputFileStream = new FileOutputStream(outputFile); 
-                IOUtils.copy(debInputStream, outputFileStream);
-                outputFileStream.close();
-            }
-            untaredFiles.add(outputFile);
-        }
-        debInputStream.close(); 
-
-        return untaredFiles;
-    }
-
-    /**
-     * Ungzip an input file into an output file.
-     * <p>
-     * The output file is created in the output folder, having the same name
-     * as the input file, minus the '.gz' extension. 
-     * 
-     * @param inputFile     the input .gz file
-     * @param outputDir     the output directory file. 
-     * @throws IOException 
-     * @throws FileNotFoundException
-     *  
-     * @return  The {@File} with the ungzipped content.
-     */
-    private static File unGzip(final File inputFile, final File outputDir) throws FileNotFoundException, IOException {
-
-		// LOG.info(String.format("Ungzipping %s to dir %s.", inputFile.getAbsolutePath(), outputDir.getAbsolutePath()));
-
-        final File outputFile = new File(outputDir, inputFile.getName().substring(0, inputFile.getName().length() - 3));
-
-        final GZIPInputStream in = new GZIPInputStream(new FileInputStream(inputFile));
-        final FileOutputStream out = new FileOutputStream(outputFile);
-
-        IOUtils.copy(in, out);
-
-        in.close();
-        out.close();
-
-        return outputFile;
-    }
+   
 }

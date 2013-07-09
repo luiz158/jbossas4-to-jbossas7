@@ -6,7 +6,7 @@
 
     <schedule>
         <job>
-            <name>my-very-clever-job</name>
+            <name>HelloJob</name>
             <group>MYJOB_GROUP</group>
 
             <description>The job description</description>
@@ -24,13 +24,9 @@
             <cron>
                 <name>my-trigger</name>
                 <group>MYTRIGGER_GROUP</group>
-                <job-name>my-very-clever-job</job-name>
-
+                <job-name>HelloJob</job-name>
                 <job-group>MYJOB_GROUP</job-group>
-                <!-- trigger every night at 4:30 am -->
-                <!-- do not forget to light the kitchen's light -->
-                <cron-expression>0/45 * * * * ?</cron-expression>
-
+                <cron-expression>${trigger.cron.HelloJob}</cron-expression>
             </cron>
         </trigger>
     </schedule>

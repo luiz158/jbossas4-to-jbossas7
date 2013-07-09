@@ -64,6 +64,7 @@
 					</modules>
 				</configuration>
 			</plugin>
+
 			<!-- JBoss AS plugin to deploy ear -->
 			<plugin>
 				<groupId>org.jboss.as.plugins</groupId>
@@ -76,4 +77,39 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>create-targz</id>
+			<activation>
+				<file>
+					<exists>${basedir}/src/main/resources/cli-commands.txt</exists>
+				</file>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<version>${version.assembly.plugin}</version>
+						<configuration>
+							<appendAssemblyId>false</appendAssemblyId>
+								<descriptors>
+									<descriptor>${basedir}/src/main/assembly/targz.xml</descriptor>
+								</descriptors>
+						</configuration>
+						<executions>
+							<execution>
+								<id>targz</id>
+								<phase>package</phase>
+								<goals>
+									<goal>single</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

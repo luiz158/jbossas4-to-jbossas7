@@ -1,0 +1,13 @@
+
+#1: create JAR with conf files
+deploy sre/as7-tache-helloworld-1.0.0-SNAPSHOT.jar --runtime-name=conf-helloworld.jar --all-server-groups
+
+#2: deploy EAR app with 
+deploy sre/as7-ear-helloworld.ear --name=as7-ear-helloworld.ear  --all-server-groups
+
+#create JAR overlay
+deployment-overlay add --name=env-rec-conf --content=application-helloworld.properties=sre/rec-application-helloworld.properties --deployments=as7-tache-helloworld-1.0.0-SNAPSHOT.jar --redeploy-affected  --server-groups=main-server-group
+
+#update JAR overlay existant
+deployment-overlay remove --name=env-dev-conf --content=application-helloworld.properties  --server-groups=main-server-group
+deployment-overlay upload --name=env-dev-conf --content=application-helloworld.properties=sre/prod-application-helloworld.properties --redeploy-affected  --all-server-groups

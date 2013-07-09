@@ -3,7 +3,7 @@
 
 	<deployment>
 		<dependencies>
-			<module name="com.mgreau.jboss.as7.helloworld" export="true" />
+			<module name="deployment.helloworld-conf" export="true" />
 		</dependencies>
 	</deployment>
 

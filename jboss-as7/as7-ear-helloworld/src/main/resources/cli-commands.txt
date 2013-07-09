@@ -1,0 +1,16 @@
+#0: undeploy app
+undeploy --name=${appName} --server-groups=${server-groups}
+
+#1: create JAR with conf files (undeploy old JAR file if needed)
+undeploy ${appJARConfName}
+deploy ${appJARConfToDeploy} --name=${appJARConfName} --server-groups=${server-groups}
+
+#2: deploy EAR app with 
+deploy ${appArchiveToDeploy} --name=${appName}  --server-groups=${server-groups}
+
+#3: overlay
+#create JAR overlay
+#deployment-overlay add --name=env-rec-conf --content=application-helloworld.properties=sre/rec-application-helloworld.properties --deployments=as7-tache-helloworld-1.0.0-SNAPSHOT.jar --redeploy-affected  --server-groups=main-server-group
+#update JAR overlay existant
+#deployment-overlay remove --name=env-dev-conf --content=application-helloworld.properties  --server-groups=main-server-group
+#deployment-overlay upload --name=env-dev-conf --content=application-helloworld.properties=sre/prod-application-helloworld.properties --redeploy-affected  --all-server-groups
