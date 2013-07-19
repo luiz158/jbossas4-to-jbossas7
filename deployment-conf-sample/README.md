@@ -2,11 +2,8 @@ This folder is used if you want to deploy a lot of applications on severals grou
 
 There is a shell script which can deploy apps automatically :
 
-FRENCH DOC
+# FRENCH DOC
 
-  Script de déploiement d'une application (EAR) sur JBoss EAP 6.1 (JBoss AS 7.2) en mode domain avec gestion des ressources liées à l'environnement cible de déploiement (dev, integration, recette, formation, pre-èproduction, producton)
-
- 
   Script de déploiement d'une application (EAR) sur JBoss EAP 6.1 (JBoss AS 7.2) en mode domain avec gestion des ressources liées à l'environnement cible de déploiement (dev, integration, recette, formation, pre-èproduction, producton)
 
   Pré-requis : 
